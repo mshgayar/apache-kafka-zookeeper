@@ -1,0 +1,23 @@
+---
+- name: Install Zookeeper service by copying service to /etc/systemd/system
+  template: src=zookeeper.service dest=/etc/systemd/system/ owner=kafka group=kafka
+  notify: Reload systemd
+  tags:
+    - zookeeper
+
+- name: Configure Zookeeper server by coping configuration file to /opt/kafka/config/zookeeper.properties
+  template: src=zoo.cfg.j2 dest=/opt/kafka/config/zookeeper.properties 
+  notify: Restart zookeeper
+  tags:
+    - zookeeper
+
+- name: Configure myid
+  template: src=myid.j2 dest=/var/lib/zookeeper/myid
+  notify: Restart zookeeper
+  tags:
+    - zookeeper
+
+- name: Make sure Zookeeper is running
+  service: name=zookeeper enabled=yes state=started
+  tags:
+    - zookeeper

@@ -1,0 +1,34 @@
+- name: enable and start firewalld
+  service: name=firewalld enabled=yes state=started
+  tags:
+    - firewall
+
+- name: add kafka service templates to /etc/firewalld/services/
+  template: src=kafka.xml dest=/etc/firewalld/services/
+  tags:
+    - firewall
+
+- name: add zookeeper service template to /etc/firewalld/services/
+  template: src=zookeeper.xml dest=/etc/firewalld/services/
+  tags:
+    - firewall
+
+- name: restart firewalld service
+  systemd:
+    name: firewalld
+    state: restarted
+    daemon_reload: yes
+  tags:
+    - firewall
+
+- name: FirewallD rules
+  firewalld:
+    permanent: yes
+    immediate: yes
+    service: "{{ item }}"
+    state: enabled
+  with_items:
+   - kafka
+   - zookeeper
+  tags:
+    - firewall

@@ -1,0 +1,61 @@
+---
+- name: install java & required packages for kafka servers
+  yum:
+    name:
+    - httpd-tools
+    - wget
+    - git
+    - bash-completion
+    - java-1.8.0-openjdk.x86_64
+    - firewalld
+    - bind-utils
+    - vim   
+    state: present
+    update_cache: true
+  tags:
+    - common
+
+- name: edit /etc/bashrc with variables
+  blockinfile:
+    dest: /etc/bashrc
+    block: |
+      export JRE_HOME=/usr/lib/jvm/jre
+      export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
+      PATH=$PATH:$JRE_HOME:$JAVA_HOME
+  tags:
+    - common
+
+- name: Set nofile limits
+  lineinfile: dest=/etc/security/limits.conf
+              insertbefore="^# End of file"
+              state=present
+              line="{{ item }}"
+  with_items:
+    - "* soft nofile 32768"
+    - "* hard nofile 32768"
+  tags:
+    - common
+
+- name: Set nproc limits
+  lineinfile: dest=/etc/security/limits.d/90-nproc.conf
+              insertafter=EOF
+              state=present
+              create=yes
+              line="{{ item }}"
+              mode=0644
+  with_items:
+    - "* soft nproc 32768"
+    - "* hard nproc 32768"
+  tags:
+    - common
+
+- name: Set swappiness to 1
+  sysctl: name=vm.swappiness value=1 state=present ignoreerrors=yes
+  tags:
+    - common
+
+- name: Disable Transparent Huge Pages until reboot
+  shell: echo never > /sys/kernel/mm/transparent_hugepage/enabled && echo never > /sys/kernel/mm/transparent_hugepage/defrag
+  ignore_errors: true
+  tags:
+    - common

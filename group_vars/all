@@ -1,0 +1,11 @@
+---
+kafka_version: 2.1.0
+apache_mirror: archive.apache.org/dist/
+kafka_port: 9092
+zookeeper_client_port: 2181
+
+kafka_log_dir: /var/log/kafka-logs
+kafka_myid: /var/lib/zookeeper
+
+# set to true to show host variables
+debug: true

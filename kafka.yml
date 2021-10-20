@@ -1,0 +1,8 @@
+---
+- hosts: kafka_nodes
+  become: true
+  roles:
+    - common
+    - zookeeper
+    - kafka
+    - firewall

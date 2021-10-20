@@ -1,0 +1,83 @@
+---
+- name: Add group "kafka"
+  group: name={{ kafka_group }} system=yes
+  tags:
+    - kafka
+
+- name: Add user "kafka"
+  user: name={{ kafka_user }} group={{ kafka_group }} shell=/sbin/nologin system=yes
+  tags:
+    - kafka
+
+- name: Download the tarball
+  get_url: url="http://{{ apache_mirror }}/kafka/{{ kafka_version }}/kafka_2.12-{{ kafka_version }}.tgz" dest=/opt/kafka_2.12-{{ kafka_version }}.tgz
+  tags:
+    - kafka
+
+- name: create data dirs for karka bin and condig
+  file:
+    path: /opt/kafka
+    state: directory
+    owner: kafka
+    group: kafka
+  tags:
+    - kafka
+
+- name: Extract the tarball kafka_2.12.2.1.0.tgz contents only at destination /opt/kafka
+  #  unarchive: src=/opt/kafka_2.12-{{ kafka_version }}.tgz dest=/opt/ copy=no creates=/opt/kafka_2.11-{{ kafka_version }}
+  unarchive: 
+    src: /opt/kafka_2.12-{{ kafka_version }}.tgz
+    dest: /opt/kafka
+    extra_opts: [--strip-components=1]
+    remote_src: yes
+    owner: root
+    group: root
+  tags:
+    - kafka
+
+- name: Set permissions to Kafka folder
+  file: path=/opt/kafka/ owner=kafka group=kafka recurse=yes
+  tags:
+    - kafka
+
+- name: Create Kafka log directory
+  file:
+    path: /var/log/kafka-logs
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: 0775
+  tags:
+    - kafka
+
+- name: create directory for myid /var/lib/zookeeper
+  file:
+    path: /var/lib/zookeeper
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: 0775
+  tags:
+    - kafka
+
+- name: copy kafka.service
+  template: src=kafka.service dest=/etc/systemd/system mode=0755
+  notify: Reload systemd
+  tags:
+    - kafka
+#- name: delete the default /opt/kafka/config/server.properties 
+#  file:
+#    state: absent
+#    path: /opt/kafka/config/server.properties
+
+- name: Configure Kafka server  copy server.properties template
+  template: src=server.properties.j2  dest=/opt/kafka/config/server.properties mode=0755 owner=kafka group=kafka
+  notify: Restart kafka
+  tags:
+    - kafka
+
+
+- name: Make sure Kafka is running
+  service: name=kafka enabled=yes state=started
+  tags:
+    - kafka

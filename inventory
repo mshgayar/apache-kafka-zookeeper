@@ -1,0 +1,23 @@
+[kafka_nodes]
+kafka01.lab.example.com kafka_broker_id=1
+kafka02.lab.example.com kafka_broker_id=2
+kafka03.lab.example.com kafka_broker_id=3
+
+# These are your zookeeper cluster nodes
+[zk_servers]
+kafka01.lab.example.com zk_id=1
+kafka02.lab.example.com zk_id=2
+kafka03.lab.example.com zk_id=3
+
+
+
+
+[kafka:children]
+kafka_nodes
+zk_servers
+
+[kafka:vars]
+ansible_ssh_user=centos
+ansible_become=true
+ansible_ssh_private_key_file=~/.ssh/cloud-key
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
