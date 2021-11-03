@@ -4,7 +4,7 @@
 # apache-kafka-zookeeper
 Apache Kafka and Zookeeper cluster with ansible Based on Centos 7
 
-This Installation is based on ansible playbook to deploy kafka and zookeeper cluster
+This Installation is based on Ansible playbook to deploy Kafka and zookeeper cluster
 Required Nodes : Three Nodes
 
 
@@ -27,3 +27,4 @@ Required Nodes : Three Nodes
 
       Best Regards
       Mohamed Salah
+      :)
