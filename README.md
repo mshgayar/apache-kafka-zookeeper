@@ -17,7 +17,7 @@ Required Nodes : Three Nodes
       192.168.35.159  kafka03.lab.example.com kafka03
 
       2) ansible-playbook -i inventory kafka.yml -t common       
-      The purpose of this role is to prepare the apache kafka cluster by installing required packages
+      The purpose of this role is to prepare the apache kafka cluster by installing required packages & java
 
       3) ansible-playbook -i inventory kafka.yml -t firewall
       The purpose of this role is to create new firewall services for both kakfka and zookeeper
